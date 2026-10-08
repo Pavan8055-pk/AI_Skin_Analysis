@@ -64,8 +64,13 @@ def render_error(message, code=400):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
-
+    return render_template(
+        "index.html",
+        face_detected=False,
+        image_data=None,
+        skin_data=None,
+        error=None
+    )
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
