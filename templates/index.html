@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SkinSense AI | Skin Analysis</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f7f8fc;
+            --card: #ffffff;
+            --text: #171923;
+            --muted: #73798c;
+            --border: #e8eaf1;
+            --primary: #635bff;
+            --primary-dark: #5048e5;
+            --purple-soft: #f0efff;
+            --green: #16a34a;
+            --orange: #d97706;
+            --red: #dc2626;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #ebe9ff 0, transparent 30%),
+                radial-gradient(circle at bottom right, #e9f8f1 0, transparent 28%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            max-width: 1100px;
+            margin: auto;
+            padding: 24px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #635bff, #8b5cf6);
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+            box-shadow: 0 8px 20px rgba(99, 91, 255, .25);
+        }
+
+        .nav-badge {
+            font-size: 12px;
+            color: var(--primary);
+            background: var(--purple-soft);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 25px 20px 60px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 6vw, 58px);
+            line-height: 1.05;
+            margin-bottom: 14px;
+            letter-spacing: -2px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #635bff, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, .88);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, .9);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(32, 35, 60, .10);
+        }
+
+        .choose-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .choose-title h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .choose-title p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .source-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        .source-button {
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            padding: 22px;
+            cursor: pointer;
+            transition: .2s ease;
+            text-align: left;
+        }
+
+        .source-button:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 30px rgba(99, 91, 255, .12);
+        }
+
+        .source-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            background: var(--purple-soft);
+            margin-bottom: 12px;
+        }
+
+        .source-button h3 {
+            margin-bottom: 5px;
+        }
+
+        .source-button p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .camera-panel {
+            display: none;
+            max-width: 650px;
+            margin: 22px auto 0;
+            background: #101116;
+            border-radius: 22px;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            display: block;
+            border-radius: 15px;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 5px 4px;
+        }
+
+        .control-btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .capture-btn {
+            background: white;
+            color: #111;
+        }
+
+        .close-camera {
+            background: #292b34;
+            color: white;
+        }
+
+        .preview-section {
+            display: none;
+            margin: 25px auto 0;
+            max-width: 650px;
+            text-align: center;
+        }
+
+        #previewImage {
+            width: 100%;
+            max-height: 480px;
+            object-fit: contain;
+            border-radius: 20px;
+            background: #f0f1f5;
+            border: 1px solid var(--border);
+        }
+
+        .file-name {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .analyze-btn {
+            flex: 1;
+            border: none;
+            background: linear-gradient(135deg, #635bff, #8b5cf6);
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 91, 255, .25);
+        }
+
+        .reset-btn {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 16px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .analyze-btn:disabled {
+            opacity: .7;
+            cursor: wait;
+        }
+
+        .tips {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .tip {
+            background: #f7f7fb;
+            color: var(--muted);
+            padding: 7px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+        }
+
+        .error-box {
+            margin: 20px auto 0;
+            max-width: 650px;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 13px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* RESULTS */
+
+        .results {
+            margin-top: 35px;
+            padding-top: 35px;
+            border-top: 1px solid var(--border);
+        }
+
+        .result-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-title span {
+            color: var(--green);
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .result-title h2 {
+            font-size: 28px;
+            margin-top: 5px;
+        }
+
+        .result-photo {
+            display: block;
+            max-width: 100%;
+            max-height: 400px;
+            margin: 0 auto 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .score-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-ring {
+            width: 170px;
+            height: 170px;
+            margin: auto;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle, white 64%, transparent 65%),
+                conic-gradient(
+                    #635bff calc(var(--score) * 1%),
+                    #e9e9f2 0
+                );
+        }
+
+        .score-number {
+            font-size: 42px;
+            font-weight: 900;
+        }
+
+        .score-number small {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .score-text {
+            margin-top: 10px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .result-card {
+            background: #fafaff;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .result-icon {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .result-label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .level-low {
+            color: var(--green);
+        }
+
+        .level-moderate {
+            color: var(--orange);
+        }
+
+        .level-high {
+            color: var(--red);
+        }
+
+        .download-area {
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            text-decoration: none;
+            border: none;
+            background: #171923;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: #30323d;
+        }
+
+        .disclaimer {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f8f8fb;
+            border-radius: 14px;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 15px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 18px 15px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            .container {
+                padding: 20px 12px 40px;
+            }
+
+            .main-card {
+                padding: 20px 15px;
+                border-radius: 22px;
+            }
+
+            .source-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+            }
+
+            .reset-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 430px) {
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+
+            .score-ring {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+            SkinSense AI
+        </div>
+
+        <div class="nav-badge">
+            AI Skin Analysis
+        </div>
+
+    </nav>
+
+
+    <main class="container">
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <h1>
+                Know Your Skin.
+                <span class="gradient-text">Better.</span>
+            </h1>
+
+            <p>
+                Get an image-based skin analysis using AI-assisted
+                computer vision. Capture a photo or choose one from
+                your device.
+            </p>
+
+        </section>
+
+
+        <!-- MAIN CARD -->
+
+        <section class="main-card">
+
+            <div class="choose-title">
+
+                <h2>Choose your photo source</h2>
+
+                <p>
+                    For best results, use a clear front-facing photo.
+                </p>
+
+            </div>
+
+
+            <!-- SOURCE BUTTONS -->
+
+            <div class="source-buttons">
+
+                <!-- CAMERA -->
+
+                <button
+                    type="button"
+                    class="source-button"
+                    onclick="openCamera()"
+                >
+
+                    <div class="source-icon">
+                        📷
+                    </div>
+
+                    <h3>Use Camera</h3>
+
+                    <p>
+                        Allow camera access and capture a live photo.
+                    </p>
+
+                </button>
+
+
+                <!-- FILE -->
+
+                <button
+                    type="button"
+                    class="source-button"
+                    onclick="openFiles()"
+                >
+
+                    <div class="source-icon">
+                        📁
+                    </div>
+
+                    <h3>Choose Files</h3>
+
+                    <p>
+                        Select a JPG, PNG or WEBP photo from your device.
+                    </p>
+
+                </button>
+
+            </div>
+
+
+            <!-- HIDDEN FILE INPUT -->
+
+            <input
+                type="file"
+                id="fileInput"
+                name="image"
+                accept="image/jpeg,image/png,image/webp"
+            >
+
+
+            <!-- CAMERA -->
+
+            <div
+                class="camera-panel"
+                id="cameraPanel"
+            >
+
+                <video
+                    id="cameraVideo"
+                    autoplay
+                    playsinline
+                ></video>
+
+                <div class="camera-controls">
+
+                    <button
+                        type="button"
+                        class="control-btn capture-btn"
+                        onclick="capturePhoto()"
+                    >
+                        ● Capture
+                    </button>
+
+                    <button
+                        type="button"
+                        class="control-btn close-camera"
+                        onclick="closeCamera()"
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PREVIEW -->
+
+            <div
+                class="preview-section"
+                id="previewSection"
+            >
+
+                <img
+                    id="previewImage"
+                    alt="Selected skin analysis photo"
+                >
+
+                <div
+                    class="file-name"
+                    id="fileName"
+                ></div>
+
+
+                <form
+                    action="/analyze"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="analyzeForm"
+                >
+
+                    <input
+                        type="file"
+                        name="image"
+                        id="submitFile"
+                        hidden
+                    >
+
+                    <div class="action-row">
+
+                        <button
+                            type="submit"
+                            class="analyze-btn"
+                            id="analyzeButton"
+                        >
+                            ✨ Analyze My Skin
+                        </button>
+
+                        <button
+                            type="button"
+                            class="reset-btn"
+                            onclick="resetPhoto()"
+                        >
+                            Change Photo
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- TIPS -->
+
+            <div class="tips">
+
+                <span class="tip">☀️ Good lighting</span>
+                <span class="tip">🙂 Face camera</span>
+                <span class="tip">🚫 No filters</span>
+                <span class="tip">🕶️ Remove glasses</span>
+
+            </div>
+
+
+            {% if error %}
+
+            <div class="error-box">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <!-- RESULTS -->
+
+            {% if face_detected is defined %}
+
+            <div class="results">
+
+                <div class="result-title">
+
+                    {% if face_detected %}
+
+                    <span>✓ ANALYSIS COMPLETE</span>
+
+                    <h2>Your Skin Analysis</h2>
+
+                    {% else %}
+
+                    <span style="color:#dc2626;">
+                        FACE NOT DETECTED
+                    </span>
+
+                    <h2>Try Another Photo</h2>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if image_data %}
+
+                <img
+                    class="result-photo"
+                    src="data:image/jpeg;base64,{{ image_data }}"
+                    alt="Analyzed photo"
+                >
+
+                {% endif %}
+
+
+                {% if face_detected and skin_data %}
+
+                {% set s = skin_data.skin_score %}
+
+
+                <!-- SCORE -->
+
+                <div class="score-area">
+
+                    <div
+                        class="score-ring"
+                        style="--score: {{ s }}"
+                    >
+
+                        <div class="score-number">
+
+                            {{ s }}
+
+                            <small>
+                                out of 100
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="score-text">
+
+                        {% if s >= 75 %}
+                            Excellent skin appearance
+                        {% elif s >= 50 %}
+                            Moderate skin appearance
+                        {% else %}
+                            Some areas need attention
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESULT CARDS -->
+
+                <div class="result-grid">
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            🧴
+                        </div>
+
+                        <div class="result-label">
+                            SKIN TYPE
+                        </div>
+
+                        <div class="result-value">
+                            {{ skin_data.skin_type }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            ✨
+                        </div>
+
+                        <div class="result-label">
+                            TEXTURE
+                        </div>
+
+                        <div class="result-value">
+                            {{ skin_data.texture }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            ☀️
+                        </div>
+
+                        <div class="result-label">
+                            BRIGHTNESS
+                        </div>
+
+                        <div class="result-value">
+                            {{ skin_data.brightness }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            🎨
+                        </div>
+
+                        <div class="result-label">
+                            SATURATION
+                        </div>
+
+                        <div class="result-value">
+                            {{ skin_data.saturation }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            🔴
+                        </div>
+
+                        <div class="result-label">
+                            REDNESS
+                        </div>
+
+                        <div class="result-value level-{{ skin_data.redness|lower }}">
+                            {{ skin_data.redness }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-icon">
+                            🟤
+                        </div>
+
+                        <div class="result-label">
+                            PIGMENTATION
+                        </div>
+
+                        <div class="result-value level-{{ skin_data.pigmentation|lower }}">
+                            {{ skin_data.pigmentation }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOWNLOAD -->
+
+                <div class="download-area">
+
+                    <button
+                        type="button"
+                        class="download-btn"
+                        onclick="downloadReport()"
+                    >
+                        📄 Download Analysis Report
+                    </button>
+
+                </div>
+
+
+                <div class="disclaimer">
+
+                    <strong>Important:</strong>
+                    Results are image-based estimates intended for
+                    educational/project purposes. They are not a
+                    medical diagnosis.
+
+                </div>
+
+
+                {% else %}
+
+                <p style="text-align:center;color:#73798c;">
+                    Face detected, but skin analysis could not be completed.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        SkinSense AI • Computer Vision Skin Analysis
+    </footer>
+
+
+    <script>
+
+        let cameraStream = null;
+
+        const fileInput =
+            document.getElementById("fileInput");
+
+        const submitFile =
+            document.getElementById("submitFile");
+
+        const previewSection =
+            document.getElementById("previewSection");
+
+        const previewImage =
+            document.getElementById("previewImage");
+
+        const fileName =
+            document.getElementById("fileName");
+
+        const cameraPanel =
+            document.getElementById("cameraPanel");
+
+        const cameraVideo =
+            document.getElementById("cameraVideo");
+
+        const analyzeForm =
+            document.getElementById("analyzeForm");
+
+        const analyzeButton =
+            document.getElementById("analyzeButton");
+
+
+        /* FILE SELECTION */
+
+        function openFiles() {
+
+            fileInput.click();
+
+        }
+
+
+        fileInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            showPreview(file);
+
+        });
+
+
+        /* SHOW PREVIEW */
+
+        function showPreview(file) {
+
+            const allowed = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowed.includes(file.type)) {
+
+                alert(
+                    "Please choose a JPG, PNG or WEBP image."
+                );
+
+                return;
+            }
+
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+
+                previewImage.src =
+                    event.target.result;
+
+                previewSection.style.display =
+                    "block";
+
+                fileName.textContent =
+                    file.name;
+
+            };
+
+            reader.readAsDataURL(file);
+
+
+            /*
+                Copy selected file to the form input
+                that will actually be submitted.
+            */
+
+            const dataTransfer =
+                new DataTransfer();
+
+            dataTransfer.items.add(file);
+
+            submitFile.files =
+                dataTransfer.files;
+
+        }
+
+
+        /* CAMERA */
+
+        async function openCamera() {
+
+            try {
+
+                cameraStream =
+                    await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: "user",
+                            width: {
+                                ideal: 1280
+                            },
+                            height: {
+                                ideal: 720
+                            }
+                        },
+                        audio: false
+                    });
+
+
+                cameraVideo.srcObject =
+                    cameraStream;
+
+                cameraPanel.style.display =
+                    "block";
+
+                previewSection.style.display =
+                    "none";
+
+            }
+
+            catch (error) {
+
+                alert(
+                    "Camera access was denied or is not available. " +
+                    "Please allow camera permission in your browser."
+                );
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        /* CAPTURE CAMERA PHOTO */
+
+        function capturePhoto() {
+
+            if (!cameraStream) {
+                return;
+            }
+
+
+            const canvas =
+                document.createElement("canvas");
+
+            canvas.width =
+                cameraVideo.videoWidth;
+
+            canvas.height =
+                cameraVideo.videoHeight;
+
+
+            const context =
+                canvas.getContext("2d");
+
+            context.drawImage(
+                cameraVideo,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            canvas.toBlob(
+                function (blob) {
+
+                    const file =
+                        new File(
+                            [blob],
+                            "camera-photo.jpg",
+                            {
+                                type: "image/jpeg"
+                            }
+                        );
+
+
+                    const dataTransfer =
+                        new DataTransfer();
+
+                    dataTransfer.items.add(file);
+
+                    submitFile.files =
+                        dataTransfer.files;
+
+
+                    previewImage.src =
+                        URL.createObjectURL(file);
+
+                    fileName.textContent =
+                        "Camera photo";
+
+                    previewSection.style.display =
+                        "block";
+
+                    closeCamera();
+
+                },
+                "image/jpeg",
+                0.90
+            );
+
+        }
+
+
+        /* CLOSE CAMERA */
+
+        function closeCamera() {
+
+            if (cameraStream) {
+
+                cameraStream
+                    .getTracks()
+                    .forEach(
+                        track => track.stop()
+                    );
+
+                cameraStream = null;
+
+            }
+
+            cameraVideo.srcObject = null;
+
+            cameraPanel.style.display =
+                "none";
+
+        }
+
+
+        /* RESET */
+
+        function resetPhoto() {
+
+            submitFile.value = "";
+
+            fileInput.value = "";
+
+            previewImage.src = "";
+
+            fileName.textContent = "";
+
+            previewSection.style.display =
+                "none";
+
+        }
+
+
+        /* ANALYZE */
+
+        analyzeForm.addEventListener(
+            "submit",
+            function () {
+
+                if (
+                    !submitFile.files ||
+                    submitFile.files.length === 0
+                ) {
+
+                    alert(
+                        "Please choose a photo or capture one with the camera."
+                    );
+
+                    return;
+
+                }
+
+
+                analyzeButton.disabled = true;
+
+                analyzeButton.textContent =
+                    "🔄 Analyzing...";
+
+            }
+        );
+
+
+        /* DOWNLOAD REPORT */
+
+        function downloadReport() {
+
+            /*
+                Temporary browser report.
+                We will replace this with a
+                proper PDF report in the next step.
+            */
+
+            window.print();
+
+        }
+
+
+        /* CLEAN CAMERA WHEN PAGE CLOSES */
+
+        window.addEventListener(
+            "beforeunload",
+            closeCamera
+        );
+
+    </script>
+
+</body>
+
+</html>
