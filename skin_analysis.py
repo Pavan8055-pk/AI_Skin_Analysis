@@ -93,8 +93,9 @@ def analyze_skin(image, face):
         recommendations.append(
             "Use a gentle cleanser, moisturizer and broad-spectrum sunscreen."
         )
+    print("DEBUG: Reached final return")
 
-        return {
+    return {
         "skin_type": skin_type,
         "brightness": round(brightness, 2),
         "saturation": round(saturation, 2),
@@ -114,8 +115,6 @@ def analyze_skin(image, face):
         "regions": {},
         "analysis_type": "Heuristic computer vision estimate",
         "medical_diagnosis": False,
-
-        # Advanced analysis fields
         "blackhead_count": None,
         "blackhead_status": "Not reliably assessed",
         "whitehead_count": None,
@@ -128,7 +127,7 @@ def analyze_skin(image, face):
         "dark_circle_status": "Not reliably assessed",
         "dark_circle_score": None,
         "hydration_score": None,
-        "hydration_status": "Cannot be measured from an ordinary photo",
+        "hydration_status": "Cannot be measured from an ordinary image",
         "estimated_skin_age": None,
         "personalized_recommendations": recommendations,
     }

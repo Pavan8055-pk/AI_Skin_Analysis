@@ -75,7 +75,8 @@ def analyze():
         x, y, w, h = [int(v) for v in face]
 
         skin_data = analyze_skin(image, face)
-        print("SKIN ANALYSIS DATA:", skin_data)
+        print("SKIN ANALYSIS DATA:", repr(skin_data))
+        print("DATA TYPE:", type(skin_data).__name__)
 
         cv2.rectangle(
             preview, (x, y), (x + w, y + h),
