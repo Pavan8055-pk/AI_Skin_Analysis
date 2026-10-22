@@ -78,6 +78,7 @@ def analyze_skin(image, face):
     quality_score = int(max(0, min(
         100, 100 - abs(texture - 25) * 1.5
     )))
+    skin_score = quality_score
 
     recommendations = []
     if brightness > 145 and saturation > 70:
@@ -93,31 +94,34 @@ def analyze_skin(image, face):
             "Use a gentle cleanser, moisturizer and broad-spectrum sunscreen."
         )
 
-    return {
+        return {
         "skin_type": skin_type,
         "brightness": round(brightness, 2),
         "saturation": round(saturation, 2),
         "texture": round(texture, 2),
-        "redness": redness,
+        "redness": round(redness, 2),
         "pigmentation": round(pigmentation_proxy, 2),
-        "skin_score": quality_score,
+        "skin_score": skin_score,
         "confidence": 50,
         "image_quality": "Image-based estimate",
         "quality_score": quality_score,
-        "quality_message": "Results depend on lighting and image quality.",
-        "redness_score": redness,
+        "quality_message": (
+            "Results are approximate and depend on lighting and image quality."
+        ),
+        "redness_score": round(redness, 2),
         "shine_ratio": round(saturation, 2),
         "skin_coverage": "Estimated face region",
         "regions": {},
         "analysis_type": "Heuristic computer vision estimate",
         "medical_diagnosis": False,
 
-        "blackhead_count": dark_count,
-        "blackhead_status": f"Dark-spot candidates: {blackhead_ratio:.2f}%",
-        "whitehead_count": bright_count,
-        "whitehead_status": f"Bright-spot candidates: {whitehead_ratio:.2f}%",
-        "pore_count": round(pore_proxy, 2),
-        "pore_status": "Texture-based visibility proxy",
+        # Advanced analysis fields
+        "blackhead_count": None,
+        "blackhead_status": "Not reliably assessed",
+        "whitehead_count": None,
+        "whitehead_status": "Not reliably assessed",
+        "pore_count": None,
+        "pore_status": "Not reliably assessed",
         "pigmentation_map_status": "Image-based estimate",
         "pigmentation_map_coverage": round(pigmentation_proxy, 2),
         "pigmentation_map_regions": {},
@@ -126,5 +130,5 @@ def analyze_skin(image, face):
         "hydration_score": None,
         "hydration_status": "Cannot be measured from an ordinary photo",
         "estimated_skin_age": None,
-        "personalized_recommendations": recommendations
+        "personalized_recommendations": recommendations,
     }
