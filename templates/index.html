@@ -1264,7 +1264,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.blackhead_count|default("Not available") }}
+                            {{ skin_data.get('blackhead_count') if skin_data.get('blackhead_count') is not none else 'Not available' }}
                         </div>
 
                         <div class="result-sub">
@@ -1285,7 +1285,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.whitehead_count|default("Not available") }}
+                            {{ skin_data.whitehead_count|default("Not available", true) }}
                         </div>
 
                         <div class="result-sub">
@@ -1306,7 +1306,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.pore_count|default("Not available") }}
+                            {{ skin_data.pore_count|default("Not available", true) }}
                         </div>
 
                         <div class="result-sub">
@@ -1327,7 +1327,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.pigmentation_map_status|default("Not available") }}
+                            {{ skin_data.pigmentation_map_status|default("Not available", true) }}
                         </div>
 
                         <div class="result-sub">
@@ -1349,7 +1349,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.dark_circle_status|default("Not available") }}
+                            {{ skin_data.dark_circle_status|default("Not available",) }}
                         </div>
 
                         <div class="result-sub">
@@ -1371,7 +1371,7 @@
                         </div>
 
                         <div class="result-value">
-                            {{ skin_data.hydration_score|default("Not available") }}
+                            {{ skin_data.hydration_score|default("Not available", true) }}
                         </div>
 
                         <div class="result-sub">
