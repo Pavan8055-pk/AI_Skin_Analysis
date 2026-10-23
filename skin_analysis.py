@@ -115,6 +115,61 @@ def analyze_skin(image, face):
     # This is a rough image-feature count, NOT a true pore count.
     pore_estimate = max(0, pore_feature_count - 1)
 
+    
+    # Experimental blackhead/whitehead candidate detection
+    # These are visual feature estimates, not verified comedone counts.
+
+    feature_gray = cv2.cvtColor(skin, cv2.COLOR_BGR2GRAY)
+    feature_gray = cv2.GaussianBlur(feature_gray, (3, 3), 0)
+
+    feature_kernel = cv2.getStructuringElement(
+        cv2.MORPH_ELLIPSE, (9, 9)
+    )
+
+    # Dark small features may resemble blackheads
+    dark_response = cv2.morphologyEx(
+        feature_gray, cv2.MORPH_BLACKHAT, feature_kernel
+    )
+
+    # Bright small features may resemble whiteheads
+    bright_response = cv2.morphologyEx(
+        feature_gray, cv2.MORPH_TOPHAT, feature_kernel
+    )
+
+    
+    def count_candidate_features(response, threshold_value=30):
+        # Filter weak image responses and reduce small noise
+        _, mask = cv2.threshold(
+            response, threshold_value, 255, cv2.THRESH_BINARY
+        )
+
+        kernel = np.ones((3, 3), np.uint8)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+        count, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            mask, connectivity=8
+        )
+
+        candidates = 0
+        for i in range(1, count):
+            area = stats[i, cv2.CC_STAT_AREA]
+            width = stats[i, cv2.CC_STAT_WIDTH]
+            height = stats[i, cv2.CC_STAT_HEIGHT]
+
+            if (
+                4 <= area <= 30
+                and 2 <= width <= 7
+                and 2 <= height <= 7
+            ):
+                candidates += 1
+
+        return candidates
+
+    
+    blackhead_estimate = count_candidate_features(dark_response)
+    whitehead_estimate = count_candidate_features(bright_response)
+
+
     print("DEBUG: Reached final return")
 
     return {
@@ -137,10 +192,10 @@ def analyze_skin(image, face):
         "regions": {},
         "analysis_type": "Heuristic computer vision estimate",
         "medical_diagnosis": False,
-        "blackhead_count": None,
-        "blackhead_status": "Not reliably assessed",
-        "whitehead_count": None,
-        "whitehead_status": "Not reliably assessed",
+        "blackhead_count": blackhead_estimate,
+        "blackhead_status": "Approximate dark-feature count; not a true blackhead count",
+        "whitehead_count": whitehead_estimate,
+        "whitehead_status": "Approximate bright-feature count; not a true whitehead count",
         "pore_count": pore_estimate,
         "pore_status": "Approximate dark-feature count; not a true pore count",
         "pigmentation_map_status": "Image-based estimate",
