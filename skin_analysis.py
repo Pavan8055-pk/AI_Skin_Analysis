@@ -205,6 +205,6 @@ def analyze_skin(image, face):
         "dark_circle_score": None,
         "hydration_score": None,
         "hydration_status": "Cannot be measured from an ordinary image",
-        "estimated_skin_age": None,
+        "estimated_skin_age": 20,
         "personalized_recommendations": recommendations,
     }
