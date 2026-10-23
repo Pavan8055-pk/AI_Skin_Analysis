@@ -87,7 +87,7 @@ def analyze_skin(image, face):
         )
     if redness > 20:
         recommendations.append(
-            "Consider a fragrance-free moisturizer and gentle skincare."
+            "Consider a fragrance-free moisturizer, Non-comedogenic sunscreen and gentle Facewash."
         )
     if not recommendations:
         recommendations.append(
