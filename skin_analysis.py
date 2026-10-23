@@ -93,6 +93,28 @@ def analyze_skin(image, face):
         recommendations.append(
             "Use a gentle cleanser, moisturizer and broad-spectrum sunscreen."
         )
+        
+    # Basic image-based pore feature estimate
+    pore_gray = cv2.cvtColor(skin, cv2.COLOR_BGR2GRAY)
+    pore_gray = cv2.GaussianBlur(pore_gray, (5, 5), 0)
+
+    local_mean = cv2.GaussianBlur(pore_gray, (15, 15), 0)
+    dark_features = cv2.subtract(local_mean, pore_gray)
+
+    _, pore_mask = cv2.threshold(
+        dark_features, 8, 255, cv2.THRESH_BINARY
+    )
+
+    pore_mask = cv2.morphologyEx(
+        pore_mask, cv2.MORPH_OPEN,
+        np.ones((3, 3), np.uint8)
+    )
+
+    pore_feature_count, _ = cv2.connectedComponents(pore_mask)
+
+    # This is a rough image-feature count, NOT a true pore count.
+    pore_estimate = max(0, pore_feature_count - 1)
+
     print("DEBUG: Reached final return")
 
     return {
@@ -119,8 +141,8 @@ def analyze_skin(image, face):
         "blackhead_status": "Not reliably assessed",
         "whitehead_count": None,
         "whitehead_status": "Not reliably assessed",
-        "pore_count": None,
-        "pore_status": "Not reliably assessed",
+        "pore_count": pore_estimate,
+        "pore_status": "Approximate dark-feature count; not a true pore count",
         "pigmentation_map_status": "Image-based estimate",
         "pigmentation_map_coverage": round(pigmentation_proxy, 2),
         "pigmentation_map_regions": {},
